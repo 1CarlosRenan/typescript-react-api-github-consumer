@@ -8,8 +8,12 @@ interface IRepository {
   }
 }
 
+type RepositoryProps = {
+  liked: boolean;
+} & IRepository;
+
 function App() {
-  const [repos, setRepos] = useState<IRepository[]>([]);
+  const [repos, setRepos] = useState<RepositoryProps[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -27,6 +31,20 @@ function App() {
       })
   }, []);
 
+  function toggleLike(id: number) {
+    setRepos((prev) =>
+      prev.map((r) => {
+        if (r.id === id) {
+          return {
+            ...r,
+            liked: !r.liked,
+          };
+        }
+        return r;
+      })
+    )
+  }
+
   return (
     <div>
       {isLoading && <p>Carregando...</p>}
@@ -37,6 +55,9 @@ function App() {
             <h2>
               {repo.full_name}
               <span> by {repo.owner.login}</span>
+              <button onClick={() => toggleLike(repo.id)}>{
+                repo.liked ? 'Descurtir' : 'Curtir'
+              }</button>
             </h2>
           </div>
         )
