@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { IGithubRepository } from "../../types/IGithubRepository";
 
 type Props = {
@@ -10,7 +10,7 @@ export default function useGithubRepositories({ org }: Props) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
+  const fetcher = useCallback(() => {
     fetch(`https://api.github.com/orgs/${org}/repos`)
       .then((r) => r.json())
       .then((data) => {
@@ -24,5 +24,9 @@ export default function useGithubRepositories({ org }: Props) {
       })
   }, []);
 
-  return { repos, isLoading, error }
+  useEffect(() => {
+    fetcher();
+  }, [fetcher]);
+
+  return { repos, isLoading, error, refetch: fetcher }
 }
