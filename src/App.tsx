@@ -10,17 +10,27 @@ interface IRepository {
 
 function App() {
   const [repos, setRepos] = useState<IRepository[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     fetch("https://api.github.com/orgs/google/repos")
       .then((r) => r.json())
       .then((data) => {
         setRepos(data);
-      });
+      })
+      .catch((err) => {
+        setError(err)
+      })
+      .finally(() => {
+        setIsLoading(false);
+      })
   }, []);
 
   return (
     <div>
+      {isLoading && <p>Carregando...</p>}
+      {error && <p>Erro ao carregar dados</p>}
       {repos.map((repo) => {
         return (
           <div key={repo.id}>
