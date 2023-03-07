@@ -7,7 +7,7 @@ type RepositoryState = {
 }
 
 function App() {
-  const { repos, isLoading, error } = useGithubRepositories({ org: 'google' });
+  const { repos, isLoading, error, refetch } = useGithubRepositories({ org: 'google' });
   const [repositoryLikes, setRepositoryLikes] = useState<RepositoryState[]>([]);
 
   function toggleLike(id: number) {
@@ -28,7 +28,14 @@ function App() {
   return (
     <div>
       {isLoading && <p>Carregando...</p>}
-      {error && <p>Erro ao carregar dados</p>}
+      {error && (
+        <div>
+          <p>Erro ao carregar dados</p>
+          <button onClick={() => refetch()}>
+            Tentar Novamente
+          </button>
+        </div>
+      )}
       {repos.map((repo) => {
         const isLiked = repositoryLikes.find((r) => r.id === repo.id)?.liked;
         return (
