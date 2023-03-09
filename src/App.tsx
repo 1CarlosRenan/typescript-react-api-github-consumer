@@ -1,29 +1,11 @@
-import { useState } from "react";
 import useGithubRepositories from "./hooks/useGithubRepositories";
-
-type RepositoryState = {
-  id: number;
-  liked: boolean;
-}
+import useRepositoryLikeManagement from "./hooks/useRepositoryLikeManagement";
 
 function App() {
-  const { repos, isLoading, error, refetch } = useGithubRepositories({ org: 'google' });
-  const [repositoryLikes, setRepositoryLikes] = useState<RepositoryState[]>([]);
-
-  function toggleLike(id: number) {
-    setRepositoryLikes(prevState => {
-      const exists = prevState.find((r) => r.id === id)
-
-
-      if (exists) {
-        return prevState.map((r) =>
-          r.id === id ? { ...r, liked: !r.liked } : r
-        );
-      }
-
-      return [...prevState, { id, liked: true }]
-    });
-  }
+  const { repos, isLoading, error, refetch } = useGithubRepositories({
+    org: "google",
+  });
+  const { repositoryLikes, toggleLike } = useRepositoryLikeManagement();
 
   return (
     <div>
@@ -31,9 +13,7 @@ function App() {
       {error && (
         <div>
           <p>Erro ao carregar dados</p>
-          <button onClick={() => refetch()}>
-            Tentar Novamente
-          </button>
+          <button onClick={() => refetch()}>Tentar Novamente</button>
         </div>
       )}
       {repos.map((repo) => {
@@ -48,10 +28,10 @@ function App() {
               </button>
             </h2>
           </div>
-        )
+        );
       })}
     </div>
-  )
+  );
 }
 
 export default App;
