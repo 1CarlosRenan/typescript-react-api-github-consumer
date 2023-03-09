@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type RepositoryState = {
   id: number;
@@ -7,6 +7,19 @@ type RepositoryState = {
 
 export default function useRepositoryLikeManagement() {
   const [repositoryLikes, setRepositoryLikes] = useState<RepositoryState[]>([]);
+
+  useEffect(() => {
+    const storage = localStorage.getItem("repositoryLikes");
+
+    if (storage) {
+      setRepositoryLikes(JSON.parse(storage));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (repositoryLikes.length === 0) return;
+    localStorage.setItem("repositoryLikes", JSON.stringify(repositoryLikes));
+  }, [repositoryLikes]);
 
   function toggleLike(id: number) {
     setRepositoryLikes((prevState) => {
